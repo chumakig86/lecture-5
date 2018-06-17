@@ -12,7 +12,6 @@ public class Properties {
     }
 
     /**
-     *
      * @return Website frontend.
      */
     public static String getBaseUrl() {
@@ -20,7 +19,6 @@ public class Properties {
     }
 
     /**
-     *
      * @return Website backend (ULR of the Admin Panel.)
      */
     public static String getBaseAdminUrl() {
@@ -37,6 +35,7 @@ enum EnvironmentVariable {
     BASE_ADMIN_URL("env.admin.url");
 
     private String value;
+
     EnvironmentVariable(String value) {
         this.value = value;
     }

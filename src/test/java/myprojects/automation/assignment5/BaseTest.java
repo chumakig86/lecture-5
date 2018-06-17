@@ -1,6 +1,7 @@
 package myprojects.automation.assignment5;
 
 
+import myprojects.automation.assignment5.utils.DriverFactory;
 import myprojects.automation.assignment5.utils.logging.EventHandler;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -9,6 +10,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
+
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
@@ -30,16 +33,12 @@ public abstract class BaseTest {
      */
     @BeforeClass
     @Parameters({"selenium.browser", "selenium.grid"})
-    public void setUp(@Optional("chrome") String browser, @Optional("") String gridUrl) {
+    public void setUp(@Optional("") String browser,
+                      @Optional("http://localhost:4444/wd/hub") String gridUrl) throws MalformedURLException {
 
-
-        System.setProperty(
-                "webdriver.chrome.driver",
-                getResource("/chromedriver.exe"));
-
-
-        driver = new EventFiringWebDriver(new ChromeDriver());
+        driver = new EventFiringWebDriver(DriverFactory.initDriver(browser));
         driver.register(new EventHandler());
+
         driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         // unable to maximize window in mobile mode
@@ -47,7 +46,6 @@ public abstract class BaseTest {
             driver.manage().window().maximize();
 
         isMobileTesting = isMobileTesting(browser);
-
         actions = new GeneralActions(driver);
     }
 
@@ -72,7 +70,6 @@ public abstract class BaseTest {
             case "ie":
             case "internet explorer":
             case "chrome":
-            case "phantomjs":
             default:
                 return false;
         }

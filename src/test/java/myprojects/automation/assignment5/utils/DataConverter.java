@@ -41,7 +41,7 @@ public class DataConverter {
             separators.setDecimalSeparator(',');
             return new DecimalFormat("#0.00", separators).parse(priceMatcher.group(1)).floatValue();
         } catch (ParseException e) {
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
