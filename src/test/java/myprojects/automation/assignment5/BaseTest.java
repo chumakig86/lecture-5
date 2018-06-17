@@ -1,5 +1,7 @@
 package myprojects.automation.assignment5;
 
+
+import myprojects.automation.assignment5.utils.logging.EventHandler;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
@@ -7,7 +9,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
-
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -15,24 +18,28 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BaseTest {
     protected EventFiringWebDriver driver;
+    //    protected WebDriver driver;
     protected GeneralActions actions;
     protected boolean isMobileTesting;
 
     /**
      * Prepares {@link WebDriver} instance with timeout and browser window configurations.
-     *
+     * <p>
      * Driver type is based on passed parameters to the automation project,
      * creates {@link ChromeDriver} instance by default.
-     *
      */
     @BeforeClass
     @Parameters({"selenium.browser", "selenium.grid"})
     public void setUp(@Optional("chrome") String browser, @Optional("") String gridUrl) {
-        // TODO create WebDriver instance according to passed parameters
-        // driver = new EventFiringWebDriver(....);
-        // driver.register(new EventHandler());
-        // ...
 
+
+        System.setProperty(
+                "webdriver.chrome.driver",
+                getResource("/chromedriver.exe"));
+
+
+        driver = new EventFiringWebDriver(new ChromeDriver());
+        driver.register(new EventHandler());
         driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         // unable to maximize window in mobile mode
@@ -55,7 +62,6 @@ public abstract class BaseTest {
     }
 
     /**
-     *
      * @return Whether required browser displays content in mobile mode.
      */
     private boolean isMobileTesting(String browser) {
@@ -66,8 +72,19 @@ public abstract class BaseTest {
             case "ie":
             case "internet explorer":
             case "chrome":
+            case "phantomjs":
             default:
                 return false;
         }
+    }
+
+
+    private String getResource(String resourceName) {
+        try {
+            return Paths.get(BaseTest.class.getResource(resourceName).toURI()).toFile().getPath();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return resourceName;
     }
 }
